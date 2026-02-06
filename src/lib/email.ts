@@ -59,7 +59,7 @@ export function welcomeEmail(name: string) {
     
     <!-- Header -->
     <div style="background: linear-gradient(135deg, #0d9488 0%, #115e59 100%); padding: 32px; text-align: center;">
-      <h1 style="color: white; margin: 0; font-size: 24px;">✦ NOVALEARN</h1>
+      <img src="https://novalearn.co.uk/logo/logo-white.png" alt="NovaLearn" style="height: 40px; width: auto;" />
     </div>
     
     <!-- Content -->
@@ -151,7 +151,7 @@ export function subscriptionConfirmedEmail(name: string, plan: string) {
     
     <!-- Header -->
     <div style="background: linear-gradient(135deg, #0d9488 0%, #115e59 100%); padding: 32px; text-align: center;">
-      <h1 style="color: white; margin: 0; font-size: 24px;">✦ NOVALEARN</h1>
+      <img src="https://novalearn.co.uk/logo/logo-white.png" alt="NovaLearn" style="height: 40px; width: auto;" />
     </div>
     
     <!-- Content -->
@@ -225,7 +225,7 @@ export function upgradeReminderEmail(name: string, usagePercent: number) {
     
     <!-- Header -->
     <div style="background: linear-gradient(135deg, #0d9488 0%, #115e59 100%); padding: 32px; text-align: center;">
-      <h1 style="color: white; margin: 0; font-size: 24px;">✦ NOVALEARN</h1>
+      <img src="https://novalearn.co.uk/logo/logo-white.png" alt="NovaLearn" style="height: 40px; width: auto;" />
     </div>
     
     <!-- Content -->
