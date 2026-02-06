@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+:root {
+  --navy: #1a1a2e;
+  --navy-light: #16213e;
+  --accent: #e85d04;
+  --accent-hover: #dc2f02;
+  --accent-light: #fff4e6;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6b7280;
+  --bg-light: #fefcf3;
+  --bg-warm: #fef9ef;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --teal: #0d9488;
+  --teal-dark: #115e59;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-primary);
+}
+
+.gradient-hero {
+  background: linear-gradient(180deg, #fef3c7 0%, #fef9ef 50%, #ffffff 100%);
+}
+
+.gradient-hero-alt {
+  background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 100%);
+}
+
+.score-ring {
+  stroke-dasharray: 283;
+  stroke-dashoffset: 283;
+  transition: stroke-dashoffset 1s ease-out;
+}
+
+.btn-primary {
+  background-color: var(--accent);
+  color: white;
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+}
+
+.btn-secondary {
+  background-color: white;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: var(--accent-light);
+}
+
+.card {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
