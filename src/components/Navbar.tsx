@@ -13,6 +13,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="flex items-center gap-2">
             <span className="text-2xl font-bold text-[var(--navy)]">✦ NOVALEARN</span>
+            <span className="text-lg" title="United Kingdom">🇬🇧</span>
           </Link>
 
           {/* Desktop menu */}
