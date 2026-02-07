@@ -239,7 +239,7 @@ export default function Home() {
               features={[
                 '10,000 analyses per month',
                 'Unlimited API',
-                'LMS integration',
+                'LMS integration (Canvas, Moodle, Blackboard, Google Classroom)',
                 'Admin dashboard',
                 'Priority support',
               ]}
@@ -253,10 +253,10 @@ export default function Home() {
               description="For national organisations"
               features={[
                 'Unlimited analyses',
+                'Full LMS integration (all platforms)',
                 'White-label API',
                 'Dedicated account manager',
                 '99.9% SLA',
-                'Custom features',
               ]}
               cta="Contact Us"
               href="mailto:hello@novalearn.co.uk"
