@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     
     if (!pangramRes.ok) {
       console.error('Pangram API error:', await pangramRes.text())
-      return NextResponse.json({ error: 'Erreur d\'analyse' }, { status: 500 })
+      return NextResponse.json({ error: 'Analysis error' }, { status: 500 })
     }
     
     const pangramData = await pangramRes.json()
@@ -76,8 +76,8 @@ export async function POST(request: NextRequest) {
     const aiScore = Math.round((pangramData.fraction_ai || 0) * 100)
     return NextResponse.json({
       score: aiScore,
-      model: pangramData.prediction_short === 'AI' ? 'IA Générative' : null,
-      verdict: pangramData.headline || (aiScore >= 50 ? 'Contenu IA détecté' : 'Contenu humain'),
+      model: pangramData.prediction_short === 'AI' ? 'Generative AI' : null,
+      verdict: pangramData.headline || (aiScore >= 50 ? 'AI Content Detected' : 'Human Content'),
       isAI: aiScore >= 50,
       remaining: DAILY_LIMIT - limitInfo.count - 1
     })

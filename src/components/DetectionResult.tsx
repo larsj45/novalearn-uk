@@ -13,9 +13,9 @@ interface DetectionResultProps {
 }
 
 function getScoreColor(score: number) {
-  if (score < 30) return { color: '#10b981', label: 'Probablement humain', bg: 'bg-emerald-50' }
-  if (score < 60) return { color: '#f59e0b', label: 'Mixte / Incertain', bg: 'bg-amber-50' }
-  return { color: '#ef4444', label: 'Probablement IA', bg: 'bg-red-50' }
+  if (score < 30) return { color: '#10b981', label: 'Likely Human', bg: 'bg-emerald-50' }
+  if (score < 60) return { color: '#f59e0b', label: 'Mixed / Uncertain', bg: 'bg-amber-50' }
+  return { color: '#ef4444', label: 'Likely AI', bg: 'bg-red-50' }
 }
 
 function ScoreRing({ score }: { score: number }) {
@@ -64,11 +64,11 @@ export default function DetectionResult({ score, detectedModel, sentences }: Det
         <div>
           <h3 className="text-2xl font-bold text-[var(--navy)]">{label}</h3>
           <p className="text-gray-600 mt-1">
-            Probabilité de contenu généré par IA : <strong>{score}%</strong>
+            AI-generated content probability: <strong>{score}%</strong>
           </p>
           {detectedModel && (
             <p className="text-gray-500 mt-2 text-sm">
-              Modèle détecté : <span className="font-semibold text-[var(--navy)]">{detectedModel}</span>
+              Detected model: <span className="font-semibold text-[var(--navy)]">{detectedModel}</span>
             </p>
           )}
         </div>
@@ -77,7 +77,7 @@ export default function DetectionResult({ score, detectedModel, sentences }: Det
       {/* Sentence Breakdown */}
       {sentences && sentences.length > 0 && (
         <div>
-          <h4 className="text-lg font-semibold text-[var(--navy)] mb-4">Analyse par section</h4>
+          <h4 className="text-lg font-semibold text-[var(--navy)] mb-4">Section Analysis</h4>
           <div className="space-y-2">
             {sentences.map((sentence, i) => {
               const sentenceInfo = getScoreColor(sentence.ai_likelihood)
@@ -94,7 +94,7 @@ export default function DetectionResult({ score, detectedModel, sentences }: Det
                     <p className="text-sm text-gray-700">{sentence.text}</p>
                     <div className="flex items-center gap-3 mt-1">
                       <span className="text-xs font-medium" style={{ color: sentenceInfo.color }}>
-                        {sentence.ai_likelihood}% IA
+                        {sentence.ai_likelihood}% AI
                       </span>
                       {sentence.detected_model && (
                         <span className="text-xs text-gray-400">

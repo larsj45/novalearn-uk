@@ -68,7 +68,7 @@ export default function AccountPage() {
   }
 
   if (loading) {
-    return <div className="card text-center text-gray-500 py-12">Chargement...</div>
+    return <div className="card text-center text-gray-500 py-12">Loading...</div>
   }
 
   return (
@@ -97,7 +97,7 @@ export default function AccountPage() {
       <div className="card">
         <div className="flex items-center gap-3 mb-6">
           <CreditCard className="w-5 h-5 text-[var(--accent)]" />
-          <h2 className="text-lg font-semibold text-[var(--navy)]">Abonnement</h2>
+          <h2 className="text-lg font-semibold text-[var(--navy)]">Subscription</h2>
         </div>
         <div className="flex items-center justify-between">
           <div>
@@ -106,16 +106,16 @@ export default function AccountPage() {
             </p>
             <p className="text-sm text-gray-500 mt-1">
               {user?.plan === 'free'
-                ? '5 analyses par jour'
+                ? '5 analyses per day'
                 : user?.plan === 'pro'
-                ? '100 analyses par jour'
-                : 'Analyses illimitées'}
+                ? '100 analyses per day'
+                : 'Unlimited analyses'}
             </p>
           </div>
           <div className="flex gap-3">
             {user?.plan === 'free' ? (
               <a href="/signup?plan=pro" className="btn-primary text-sm">
-                Passer au Pro
+                Upgrade to Pro
               </a>
             ) : (
               <button
@@ -123,7 +123,7 @@ export default function AccountPage() {
                 disabled={portalLoading}
                 className="btn-secondary text-sm"
               >
-                {portalLoading ? 'Chargement...' : 'Gérer l\'abonnement'}
+                {portalLoading ? 'Loading...' : 'Manage Subscription'}
               </button>
             )}
           </div>

@@ -62,17 +62,17 @@ export default function HistoryPage() {
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center gap-3 mb-8">
         <History className="w-6 h-6 text-accent" />
-        <h1 className="text-2xl font-bold text-navy">Historique des analyses</h1>
+        <h1 className="text-2xl font-bold text-navy">Analysis History</h1>
       </div>
 
       {loading ? (
-        <div className="text-center py-20 text-gray-400">Chargement…</div>
+        <div className="text-center py-20 text-gray-400">Loading…</div>
       ) : scans.length === 0 ? (
         <div className="text-center py-20">
           <History className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">Aucune analyse pour le moment.</p>
+          <p className="text-gray-500">No analyses yet.</p>
           <p className="text-gray-400 text-sm mt-1">
-            Lancez votre première analyse depuis le tableau de bord.
+            Run your first analysis from the dashboard.
           </p>
         </div>
       ) : (

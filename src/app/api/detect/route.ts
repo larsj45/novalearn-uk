@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     if (scansToday >= limit) {
       return NextResponse.json({
-        error: 'Limite quotidienne atteinte. Passez au plan supérieur pour plus d\'analyses.',
+        error: 'Daily limit reached. Upgrade your plan for more analyses.',
         scans_remaining: 0,
       }, { status: 429 })
     }
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     const { text } = body
 
     if (!text || typeof text !== 'string' || text.trim().length < 50) {
-      return NextResponse.json({ error: 'Le texte doit contenir au moins 50 caractères.' }, { status: 400 })
+      return NextResponse.json({ error: 'Text must contain at least 50 characters.' }, { status: 400 })
     }
 
     const result = await detectAI(text.trim())

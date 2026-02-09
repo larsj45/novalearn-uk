@@ -20,7 +20,7 @@ export default function DashboardPage() {
 
   const handleAnalyze = async () => {
     if (!text.trim() || text.trim().length < 50) {
-      setError('Veuillez entrer au moins 50 caractères pour une analyse fiable.')
+      setError('Please enter at least 50 characters for a reliable analysis.')
       return
     }
 
@@ -44,7 +44,7 @@ export default function DashboardPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Erreur lors de l\'analyse')
+        throw new Error(data.error || 'Error during analysis')
       }
 
       setResult(data)
@@ -52,7 +52,7 @@ export default function DashboardPage() {
         setScansRemaining(data.scans_remaining)
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Une erreur est survenue'
+      const message = err instanceof Error ? err.message : 'An error occurred'
       setError(message)
     } finally {
       setLoading(false)
@@ -63,12 +63,12 @@ export default function DashboardPage() {
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--navy)]">Analyseur de contenu IA</h1>
-          <p className="text-gray-500 mt-1">Collez votre texte pour détecter le contenu généré par IA</p>
+          <h1 className="text-2xl font-bold text-[var(--navy)]">AI Content Detector</h1>
+          <p className="text-gray-500 mt-1">Paste your text to detect AI-generated content</p>
         </div>
         {scansRemaining !== null && (
           <div className="text-sm text-gray-500 bg-white px-4 py-2 rounded-lg border border-gray-200">
-            <span className="font-semibold text-[var(--navy)]">{scansRemaining}</span> analyses restantes
+            <span className="font-semibold text-[var(--navy)]">{scansRemaining}</span> analyses remaining
           </div>
         )}
       </div>
@@ -77,11 +77,11 @@ export default function DashboardPage() {
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Collez ici le texte à analyser (minimum 50 caractères)..."
+          placeholder="Paste text here to analyse (minimum 50 characters)..."
           className="w-full h-48 resize-y border border-gray-200 rounded-lg p-4 text-sm focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 outline-none transition"
         />
         <div className="flex items-center justify-between mt-4">
-          <span className="text-xs text-gray-400">{text.length} caractères</span>
+          <span className="text-xs text-gray-400">{text.length} characters</span>
           <button
             onClick={handleAnalyze}
             disabled={loading || text.trim().length < 50}
@@ -90,12 +90,12 @@ export default function DashboardPage() {
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Analyse en cours...
+                Analysing...
               </>
             ) : (
               <>
                 <FileSearch className="w-4 h-4" />
-                Analyser
+                Analyse
               </>
             )}
           </button>
