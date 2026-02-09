@@ -76,3 +76,18 @@ body {
 .card:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(232, 93, 4, 0.1);
+}
