@@ -277,7 +277,7 @@ export default function Home() {
             Ready to detect AI content?
           </h2>
           <p className="text-gray-300 mt-4 text-lg">
-            Join thousands of professionals who trust NovaLearn
+            Join education professionals who trust NovaLearn
             to protect the integrity of their content.
           </p>
           <Link href="/signup" className="btn-primary text-lg px-8 py-4 mt-8 inline-block">
