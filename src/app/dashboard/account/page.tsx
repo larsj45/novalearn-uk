@@ -62,9 +62,9 @@ export default function AccountPage() {
   }
 
   const planLabels: Record<string, string> = {
-    free: 'Gratuit',
+    free: 'Free',
     pro: 'Pro',
-    enterprise: 'Entreprise',
+    enterprise: 'Enterprise',
   }
 
   if (loading) {
@@ -73,17 +73,17 @@ export default function AccountPage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold text-[var(--navy)]">Paramètres du compte</h1>
+      <h1 className="text-2xl font-bold text-[var(--navy)]">Account Settings</h1>
 
       {/* Profile */}
       <div className="card">
         <div className="flex items-center gap-3 mb-6">
           <User className="w-5 h-5 text-[var(--accent)]" />
-          <h2 className="text-lg font-semibold text-[var(--navy)]">Profil</h2>
+          <h2 className="text-lg font-semibold text-[var(--navy)]">Profile</h2>
         </div>
         <div className="space-y-4">
           <div>
-            <label className="text-sm text-gray-500">Nom</label>
+            <label className="text-sm text-gray-500">Name</label>
             <p className="font-medium text-[var(--navy)]">{user?.full_name || '—'}</p>
           </div>
           <div>
@@ -114,9 +114,30 @@ export default function AccountPage() {
           </div>
           <div className="flex gap-3">
             {user?.plan === 'free' ? (
-              <a href="/signup?plan=pro" className="btn-primary text-sm">
-                Upgrade to Pro
-              </a>
+              <button
+                onClick={async () => {
+                  setPortalLoading(true)
+                  try {
+                    const { supabase } = await import('@/lib/supabase')
+                    const { data: { session } } = await supabase.auth.getSession()
+                    const response = await fetch('/api/checkout', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
+                      },
+                      body: JSON.stringify({ plan: 'pro' }),
+                    })
+                    const data = await response.json()
+                    if (data.url) window.location.href = data.url
+                  } catch { console.error('Failed to start checkout') }
+                  finally { setPortalLoading(false) }
+                }}
+                disabled={portalLoading}
+                className="btn-primary text-sm"
+              >
+                {portalLoading ? 'Loading...' : 'Upgrade to Pro'}
+              </button>
             ) : (
               <button
                 onClick={openBillingPortal}
