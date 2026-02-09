@@ -3,5 +3,5 @@ import Stripe from 'stripe'
 const stripeKey = process.env.STRIPE_SECRET_KEY
 
 export const stripe = stripeKey
-  ? new Stripe(stripeKey, { apiVersion: '2025-12-18.acacia' as Stripe.LatestApiVersion })
+  ? new Stripe(stripeKey)
   : null as unknown as Stripe
