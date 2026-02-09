@@ -120,18 +120,30 @@ export default function AccountPage() {
                   try {
                     const { supabase } = await import('@/lib/supabase')
                     const { data: { session } } = await supabase.auth.getSession()
+                    if (!session?.access_token) {
+                      window.location.href = '/login'
+                      return
+                    }
                     const response = await fetch('/api/checkout', {
                       method: 'POST',
                       headers: {
                         'Content-Type': 'application/json',
-                        ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
+                        'Authorization': `Bearer ${session.access_token}`,
                       },
                       body: JSON.stringify({ plan: 'pro' }),
                     })
                     const data = await response.json()
-                    if (data.url) window.location.href = data.url
-                  } catch { console.error('Failed to start checkout') }
-                  finally { setPortalLoading(false) }
+                    if (data.url) {
+                      window.location.href = data.url
+                    } else {
+                      alert(data.error || 'Failed to start checkout. Please try again.')
+                    }
+                  } catch (err) {
+                    console.error('Failed to start checkout:', err)
+                    alert('Failed to start checkout. Please try again.')
+                  } finally {
+                    setPortalLoading(false)
+                  }
                 }}
                 disabled={portalLoading}
                 className="btn-primary text-sm"
