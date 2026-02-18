@@ -1,10 +1,31 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 interface AuthFormProps {
   mode: 'login' | 'signup' | 'reset'
+}
+
+async function redirectToCheckout(token: string, plan: string) {
+  try {
+    const response = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ plan }),
+    })
+    const data = await response.json()
+    if (data.url) {
+      window.location.href = data.url
+      return true
+    }
+  } catch {
+    // Fall through to dashboard if checkout fails
+  }
+  return false
 }
 
 export default function AuthForm({ mode }: AuthFormProps) {
@@ -14,6 +35,19 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [planParam, setPlanParam] = useState<string | null>(null)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    setPlanParam(params.get('plan'))
+  }, [])
+
+  const planLabels: Record<string, string> = {
+    starter: 'Starter — £21/month',
+    pro: 'Pro — £129/month',
+    university: 'University — £429/month',
+    enterprise: 'Enterprise',
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -25,17 +59,34 @@ export default function AuthForm({ mode }: AuthFormProps) {
       const { supabase } = await import('@/lib/supabase')
 
       if (mode === 'login') {
-        const { error } = await supabase.auth.signInWithPassword({ email, password })
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
+        // If coming from a pricing page, redirect to checkout
+        const params = new URLSearchParams(window.location.search)
+        const plan = params.get('plan')
+        if (plan && data.session?.access_token) {
+          const redirected = await redirectToCheckout(data.session.access_token, plan)
+          if (redirected) return
+        }
         window.location.href = '/dashboard'
       } else if (mode === 'signup') {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: { data: { full_name: fullName } },
         })
         if (error) throw error
-        setSuccess('Check your email to confirm your registration.')
+        if (data.session) {
+          // If a plan was selected, redirect to Stripe checkout
+          if (planParam && planParam !== 'free') {
+            setSuccess('Account created! Redirecting to payment...')
+            const redirected = await redirectToCheckout(data.session.access_token, planParam)
+            if (redirected) return
+          }
+          window.location.href = '/dashboard'
+        } else {
+          setSuccess('Check your email to confirm your registration.')
+        }
       } else {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/dashboard/account`,
@@ -58,8 +109,12 @@ export default function AuthForm({ mode }: AuthFormProps) {
   }
 
   const subtitles = {
-    login: 'Access your AI detection dashboard',
-    signup: 'Start detecting AI content for free',
+    login: planParam && planLabels[planParam]
+      ? `Login to activate the ${planLabels[planParam]} plan`
+      : 'Access your AI detection dashboard',
+    signup: planParam && planLabels[planParam]
+      ? `Create your account to activate ${planLabels[planParam]}`
+      : 'Start detecting AI content for free',
     reset: 'Enter your email to receive a reset link',
   }
 
@@ -145,7 +200,10 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 Forgot password?
               </Link>
               <span className="mx-2">·</span>
-              <Link href="/signup" className="text-[var(--accent)] hover:underline">
+              <Link
+                href={planParam ? `/signup?plan=${planParam}` : '/signup'}
+                className="text-[var(--accent)] hover:underline"
+              >
                 Create account
               </Link>
             </>
@@ -153,7 +211,10 @@ export default function AuthForm({ mode }: AuthFormProps) {
           {mode === 'signup' && (
             <>
               Already have an account?{' '}
-              <Link href="/login" className="text-[var(--accent)] hover:underline">
+              <Link
+                href={planParam ? `/login?plan=${planParam}` : '/login'}
+                className="text-[var(--accent)] hover:underline"
+              >
                 Login
               </Link>
             </>
