@@ -4,7 +4,7 @@ const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null
 
-const FROM_EMAIL = 'NovaLearn <noreply@novalearn.co.uk>'
+const FROM_EMAIL = 'Lars Janér @ NovaLearn <lars.janer@novalearn.co.uk>'
 
 export interface EmailParams {
   to: string
