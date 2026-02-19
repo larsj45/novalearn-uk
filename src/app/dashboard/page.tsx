@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import DetectionResult from '@/components/DetectionResult'
-import { FileSearch, Loader2 } from 'lucide-react'
+import { FileSearch, Loader2, CheckCircle } from 'lucide-react'
 
 interface DetectionResponse {
   ai_likelihood: number
@@ -11,12 +12,37 @@ interface DetectionResponse {
   scans_remaining?: number
 }
 
+declare function gtag(...args: unknown[]): void
+
+function ConversionTracker({ onSuccess }: { onSuccess: () => void }) {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (searchParams.get('success') === 'true') {
+      // Fire Google Ads purchase conversion — NovaLearn UK
+      // ⚠️ Replace CONVERSION_LABEL after creating conversion action in Google Ads
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'conversion', {
+          send_to: 'AW-17964304856/CONVERSION_LABEL',
+          transaction_id: '',
+        })
+      }
+      onSuccess()
+      router.replace('/dashboard', { scroll: false })
+    }
+  }, [searchParams, onSuccess, router])
+
+  return null
+}
+
 export default function DashboardPage() {
   const [text, setText] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<DetectionResponse | null>(null)
   const [error, setError] = useState('')
   const [scansRemaining, setScansRemaining] = useState<number | null>(null)
+  const [showSuccessBanner, setShowSuccessBanner] = useState(false)
 
   const handleAnalyze = async () => {
     if (!text.trim() || text.trim().length < 50) {
@@ -61,6 +87,19 @@ export default function DashboardPage() {
 
   return (
     <div className="max-w-4xl">
+      <Suspense fallback={null}>
+        <ConversionTracker onSuccess={() => setShowSuccessBanner(true)} />
+      </Suspense>
+
+      {showSuccessBanner && (
+        <div className="flex items-center gap-3 bg-green-50 border border-green-200 text-green-800 text-sm px-4 py-3 rounded-xl mb-6">
+          <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+          <span>
+            <strong>Subscription activated successfully!</strong> Your additional analyses are now available.
+          </span>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-[var(--navy)]">AI Content Detector</h1>
