@@ -21,11 +21,11 @@ function ConversionTracker({ onSuccess }: { onSuccess: () => void }) {
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
       // Fire Google Ads purchase conversion — NovaLearn UK
-      // ⚠️ Replace CONVERSION_LABEL after creating conversion action in Google Ads
       if (typeof gtag !== 'undefined') {
         gtag('event', 'conversion', {
-          send_to: 'AW-17964304856/CONVERSION_LABEL',
+          send_to: 'AW-17964304856/vg20CL_2yfsbENiThvZC',
           transaction_id: '',
+          currency: 'GBP',
         })
       }
       onSuccess()
