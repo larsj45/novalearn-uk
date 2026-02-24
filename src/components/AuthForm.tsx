@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
+declare function gtag(...args: unknown[]): void
+
 interface AuthFormProps {
   mode: 'login' | 'signup' | 'reset'
 }
@@ -76,6 +78,12 @@ export default function AuthForm({ mode }: AuthFormProps) {
           options: { data: { full_name: fullName } },
         })
         if (error) throw error
+        // Fire signup conversion for Google Ads
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'conversion', {
+            send_to: 'AW-17964304856/OklfCI3Zof4bENiThvZC',
+          })
+        }
         if (data.session) {
           // If a plan was selected, redirect to Stripe checkout
           if (planParam && planParam !== 'free') {
