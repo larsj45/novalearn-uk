@@ -35,9 +35,31 @@ export async function POST(request: NextRequest) {
     case 'checkout.session.completed': {
       const session = event.data.object as Stripe.Checkout.Session
       const userId = session.metadata?.supabase_user_id
+
+      // Credit purchase (pay-per-scan)
+      if (session.metadata?.type === 'credits') {
+        const quantity = parseInt(session.metadata.quantity || '0', 10)
+        if (userId && quantity > 0) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('scan_credits')
+            .eq('id', userId)
+            .single()
+          const currentCredits = profile?.scan_credits || 0
+          await supabase
+            .from('profiles')
+            .update({
+              scan_credits: currentCredits + quantity,
+              stripe_customer_id: session.customer as string,
+            })
+            .eq('id', userId)
+        }
+        break
+      }
+
+      // Subscription purchase
       const plan = session.metadata?.plan || 'pro'
       if (userId) {
-        // Update profile with subscription info
         const { data: profile } = await supabase
           .from('profiles')
           .update({
@@ -49,7 +71,6 @@ export async function POST(request: NextRequest) {
           .select('full_name')
           .single()
 
-        // Send subscription confirmation email
         const customerEmail = session.customer_email || session.customer_details?.email
         if (customerEmail) {
           const name = profile?.full_name || customerEmail.split('@')[0]

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { CreditCard, User } from 'lucide-react'
 
 export default function AccountPage() {
-  const [user, setUser] = useState<{ email: string; full_name: string; plan: string } | null>(null)
+  const [user, setUser] = useState<{ email: string; full_name: string; plan: string; scan_credits: number } | null>(null)
   const [loading, setLoading] = useState(true)
   const [portalLoading, setPortalLoading] = useState(false)
 
@@ -20,7 +20,7 @@ export default function AccountPage() {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('full_name, plan')
+        .select('full_name, plan, scan_credits')
         .eq('id', authUser.id)
         .single()
 
@@ -28,6 +28,7 @@ export default function AccountPage() {
         email: authUser.email || '',
         full_name: profile?.full_name || '',
         plan: profile?.plan || 'free',
+        scan_credits: profile?.scan_credits || 0,
       })
     } catch {
       console.error('Failed to load user')
@@ -106,7 +107,7 @@ export default function AccountPage() {
             </p>
             <p className="text-sm text-gray-500 mt-1">
               {user?.plan === 'free'
-                ? '5 analyses per day'
+                ? `${user.scan_credits} credit${user.scan_credits !== 1 ? 's' : ''} remaining — £0.50 per analysis`
                 : user?.plan === 'pro'
                 ? '100 analyses per day'
                 : 'Unlimited analyses'}
@@ -115,7 +116,7 @@ export default function AccountPage() {
           <div className="flex gap-3">
             {user?.plan === 'free' ? (
               <a href="/dashboard/upgrade" className="btn-primary text-sm inline-block">
-                Upgrade Plan
+                Buy Credits
               </a>
             ) : (
               <button

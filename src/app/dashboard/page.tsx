@@ -4,23 +4,24 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import DetectionResult from '@/components/DetectionResult'
 import { FileSearch, Loader2, CheckCircle } from 'lucide-react'
+import Link from 'next/link'
 
 interface DetectionResponse {
   ai_likelihood: number
   detected_model?: string
   sentences?: Array<{ text: string; ai_likelihood: number; detected_model?: string }>
   scans_remaining?: number
+  needs_credits?: boolean
 }
 
 declare function gtag(...args: unknown[]): void
 
-function ConversionTracker({ onSuccess }: { onSuccess: () => void }) {
+function ConversionTracker({ onSuccess, onCreditsAdded }: { onSuccess: () => void; onCreditsAdded: (n: number) => void }) {
   const searchParams = useSearchParams()
   const router = useRouter()
 
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
-      // Fire Google Ads purchase conversion — NovaLearn UK
       if (typeof gtag !== 'undefined') {
         gtag('event', 'conversion', {
           send_to: 'AW-17964304856/vg20CL_2yfsbENiThvZC',
@@ -31,7 +32,12 @@ function ConversionTracker({ onSuccess }: { onSuccess: () => void }) {
       onSuccess()
       router.replace('/dashboard', { scroll: false })
     }
-  }, [searchParams, onSuccess, router])
+    const creditsAdded = searchParams.get('credits_added')
+    if (creditsAdded) {
+      onCreditsAdded(parseInt(creditsAdded, 10))
+      router.replace('/dashboard', { scroll: false })
+    }
+  }, [searchParams, onSuccess, onCreditsAdded, router])
 
   return null
 }
@@ -43,6 +49,8 @@ export default function DashboardPage() {
   const [error, setError] = useState('')
   const [scansRemaining, setScansRemaining] = useState<number | null>(null)
   const [showSuccessBanner, setShowSuccessBanner] = useState(false)
+  const [creditsAddedCount, setCreditsAddedCount] = useState<number | null>(null)
+  const [needsCredits, setNeedsCredits] = useState(false)
 
   const handleAnalyze = async () => {
     if (!text.trim() || text.trim().length < 50) {
@@ -53,6 +61,7 @@ export default function DashboardPage() {
     setLoading(true)
     setError('')
     setResult(null)
+    setNeedsCredits(false)
 
     try {
       const { supabase } = await import('@/lib/supabase')
@@ -68,6 +77,12 @@ export default function DashboardPage() {
       })
 
       const data = await response.json()
+
+      if (response.status === 402 && data.needs_credits) {
+        setNeedsCredits(true)
+        setError('')
+        return
+      }
 
       if (!response.ok) {
         throw new Error(data.error || 'Error during analysis')
@@ -88,7 +103,10 @@ export default function DashboardPage() {
   return (
     <div className="max-w-4xl">
       <Suspense fallback={null}>
-        <ConversionTracker onSuccess={() => setShowSuccessBanner(true)} />
+        <ConversionTracker
+          onSuccess={() => setShowSuccessBanner(true)}
+          onCreditsAdded={(n) => setCreditsAddedCount(n)}
+        />
       </Suspense>
 
       {showSuccessBanner && (
@@ -100,17 +118,35 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {creditsAddedCount && (
+        <div className="flex items-center gap-3 bg-green-50 border border-green-200 text-green-800 text-sm px-4 py-3 rounded-xl mb-6">
+          <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+          <span>
+            <strong>{creditsAddedCount} {creditsAddedCount === 1 ? 'analysis' : 'analyses'} added!</strong> Your credits are now available.
+          </span>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-[var(--navy)]">AI Content Detector</h1>
           <p className="text-gray-500 mt-1">Paste your text to detect AI-generated content</p>
         </div>
         {scansRemaining !== null && (
-          <div className="text-sm text-gray-500 bg-white px-4 py-2 rounded-lg border border-gray-200">
-            <span className="font-semibold text-[var(--navy)]">{scansRemaining}</span> analyses remaining
+          <div className={`text-sm bg-white px-4 py-2 rounded-lg border border-gray-200 ${scansRemaining <= 0 ? 'text-red-600' : scansRemaining <= 2 ? 'text-amber-600' : 'text-gray-500'}`}>
+            <span className="font-semibold">{scansRemaining}</span> {scansRemaining === 1 ? 'credit' : 'credits'} remaining
           </div>
         )}
       </div>
+
+      {needsCredits && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-800 text-sm px-4 py-3 rounded-xl mb-6">
+          <strong>No credits remaining.</strong>{' '}
+          <Link href="/dashboard/upgrade" className="underline font-semibold hover:text-amber-900">
+            Purchase credits to continue
+          </Link>
+        </div>
+      )}
 
       <div className="card mb-6">
         <textarea
